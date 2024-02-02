@@ -1,0 +1,1 @@
+INSERT INTO employee(email, name, surname) values ('john.williams@test.com', 'john', 'williams');
