@@ -20,21 +20,21 @@ public class Room {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    @Column(name = "roomName")
+    @Column(name = "room_Name")
     private String roomName;
 
-    @Column(name = "roomNumber")
+    @Column(name = "room_Number")
     private String roomNumber;
 
     @Column(name = "floor")
     private Long floor;
 
-    @Column(name = "availableSeats")
+    @Column(name = "available_Seats")
     private Long availableSeats;
 
-    @Column(name = "phoneAvailable")
+    @Column(name = "phone_Available")
     private boolean phoneAvailable;
 
-    @Column(name = "tvAvailable")
+    @Column(name = "tv_Available")
     private boolean tvAvailable;
 }

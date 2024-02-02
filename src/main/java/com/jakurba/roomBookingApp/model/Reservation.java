@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,15 +25,20 @@ public class Reservation {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "roomId")
-    private String roomId;
+//    @Column(name = "roomId")
+//    private String roomId;
 
-    @Column(name = "reservationStart")
+    @ManyToOne
+    @JoinColumn(name = "room_Id")
+    private Room room;
+
+    @Column(name = "reservation_Start")
     private Timestamp reservationStart;
 
-    @Column(name = "reservationEnd")
+    @Column(name = "reservation_End")
     private Timestamp reservationEnd;
 
-    @Column(name = "reservationUserId")
-    private Timestamp reservationUserId;
+    @ManyToOne
+    @JoinColumn(name = "employee_Id")
+    private Employee employee;
 }
