@@ -19,22 +19,9 @@ public class EmployeeController {
     @Autowired
     EmployeeService employeeService;
 
-    @PostMapping(value = "/employee/new")
-    public Employee createEmployee(@RequestBody Employee employee) {
-        //TODO
-        return null;
-//        return employeeService.createClient(client);
-    }
-
     @GetMapping(value = "/employees")
     public List<Employee> readEmployees() {
         return employeeService.getEmployees();
     }
 
-    @PutMapping(value = "/employee/update")
-    public Employee readEmployees(@RequestBody Employee employee) {
-        //TODO
-        return null;
-//        return employeeService.updateClient(client);
-    }
 }

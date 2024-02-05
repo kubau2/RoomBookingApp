@@ -25,9 +25,6 @@ public class Reservation {
     @Column(name = "id")
     private Long id;
 
-//    @Column(name = "roomId")
-//    private String roomId;
-
     @ManyToOne
     @JoinColumn(name = "room_Id")
     private Room room;
