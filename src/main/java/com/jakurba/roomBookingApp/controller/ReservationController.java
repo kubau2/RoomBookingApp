@@ -2,7 +2,9 @@ package com.jakurba.roomBookingApp.controller;
 
 import com.jakurba.roomBookingApp.model.Reservation;
 import com.jakurba.roomBookingApp.service.ReservationService;
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -34,5 +36,10 @@ public class ReservationController {
         //TODO
         return null;
 //        return ReservationService.updateClient(client);
+    }
+
+    @DeleteMapping(value = "/reservation")
+    public boolean deleteReservation(@RequestBody JSONObject json) {
+        return reservationService.deleteReservationByIdAndEmployeeId(json);
     }
 }

@@ -15,8 +15,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     Optional<Reservation> findById(Long id);
 
-    List<Reservation> findAllByRoom(Room room);
-
     @Query(value = "SELECT * FROM reservation e WHERE room_id = ?1 AND (e.reservation_Start BETWEEN ?2 AND ?3 OR e.reservation_End BETWEEN ?2 AND ?3)", nativeQuery = true)
     List<Reservation> findAllReservationsForTheRoomInGivenTimestampWindow(Long roomId, Timestamp startTimestamp, Timestamp endTimestamp);
 
