@@ -1,13 +1,10 @@
 package com.jakurba.roomBookingApp.exceptions;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
+@ResponseStatus(code = HttpStatus.BAD_REQUEST)
 public class RoomNotAvailableException extends RuntimeException {
-
-    private static final HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-    public HttpStatus getHttpStatus() {
-        return httpStatus;
-    }
     public RoomNotAvailableException() {
         super("Room not available in the given timeWindow");
     }

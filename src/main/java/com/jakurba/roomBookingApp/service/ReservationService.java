@@ -6,20 +6,17 @@ import com.jakurba.roomBookingApp.exceptions.ReservationTimestampException;
 import com.jakurba.roomBookingApp.exceptions.RoomNotAvailableException;
 import com.jakurba.roomBookingApp.exceptions.RoomNotFoundException;
 import com.jakurba.roomBookingApp.exceptions.UserNotFoundException;
-import com.jakurba.roomBookingApp.model.Employee;
 import com.jakurba.roomBookingApp.model.Reservation;
 import com.jakurba.roomBookingApp.model.Room;
 import com.jakurba.roomBookingApp.repository.EmployeeRepository;
 import com.jakurba.roomBookingApp.repository.ReservationRepository;
 import com.jakurba.roomBookingApp.repository.RoomRepository;
 import jakarta.transaction.Transactional;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import net.minidev.json.JSONObject;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ReservationService {
@@ -37,24 +34,15 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
-    public Reservation createReservation(Reservation reservation) throws UserNotFoundException, RoomNotFoundException, ReservationTimestampException {
+    public Reservation createReservation(Reservation reservation) {
         validateInputData(reservation);
         //Find employee based on it's ID and assign it to the reservation
-        Optional<Employee> emp = employeeRepository.findById(reservation.getEmployee().getId());
-        if (emp.isPresent()){
-            reservation.setEmployee(emp.get());
-        } else {
-            throw new UserNotFoundException();
-        }
-
+        reservation.setEmployee(employeeRepository.findById(reservation.getEmployee().getId()).orElseThrow(UserNotFoundException::new));
 
         //Find room based on it's ID and assign it to the reservation
-        Optional<Room> room = roomRepository.findById(reservation.getRoom().getId());
-        if (room.isEmpty()){
-            throw new RoomNotFoundException();
-        }
+        Room room = roomRepository.findById(reservation.getRoom().getId()).orElseThrow(RoomNotFoundException::new);
         checkRoomsAvailability(reservation);
-        reservation.setRoom(room.get());
+        reservation.setRoom(room);
 
         return reservationRepository.save(reservation);
     }
@@ -73,7 +61,7 @@ public class ReservationService {
         }
     }
 
-    private void validateInputData(Reservation reservation) throws UserNotFoundException, ReservationTimestampException, RoomNotFoundException {
+    private void validateInputData(Reservation reservation) {
         if (reservation.getEmployee() == null || reservation.getEmployee().getId() == null) {
             throw new UserNotFoundException();
         }
@@ -88,7 +76,7 @@ public class ReservationService {
 
     }
 
-    private void checkRoomsAvailability(Reservation reservation) throws RoomNotAvailableException{
+    private void checkRoomsAvailability(Reservation reservation) {
         Room room = roomRepository.findById(reservation.getRoom().getId()).orElseThrow(RoomNotFoundException::new);
         List<Reservation> reservationsForTheRoom = reservationRepository.findAllReservationsForTheRoomInGivenTimestampWindow(room.getId(), reservation.getReservationStart(), reservation.getReservationEnd()); //hmm, moze tutaj zrobic juz filtr po dacie?
         if (!reservationsForTheRoom.isEmpty()) {

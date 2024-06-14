@@ -1,14 +1,9 @@
 package com.jakurba.roomBookingApp.controller;
 
-import com.jakurba.roomBookingApp.exceptions.ReservationTimestampException;
-import com.jakurba.roomBookingApp.exceptions.RoomNotAvailableException;
-import com.jakurba.roomBookingApp.exceptions.RoomNotFoundException;
-import com.jakurba.roomBookingApp.exceptions.UserNotFoundException;
 import com.jakurba.roomBookingApp.model.Reservation;
 import com.jakurba.roomBookingApp.service.ReservationService;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,18 +22,8 @@ public class ReservationController {
     ReservationService reservationService;
 
     @PostMapping(value = "/reservation/new")
-    public ResponseEntity<Object> createReservation(@RequestBody Reservation reservation) {
-        try {
-            return ResponseEntity.ok(reservationService.createReservation(reservation));
-        } catch (RoomNotFoundException e) {
-            return ResponseEntity.status(e.getHttpStatus()).body(e.getMessage());
-        } catch(UserNotFoundException e){
-            return ResponseEntity.status(e.getHttpStatus()).body(e.getMessage());
-        } catch(ReservationTimestampException e){
-            return ResponseEntity.status(e.getHttpStatus()).body(e.getMessage());
-        }catch(RoomNotAvailableException e){
-            return ResponseEntity.status(e.getHttpStatus()).body(e.getMessage());
-        }
+    public Reservation createReservation(@RequestBody Reservation reservation) {
+       return reservationService.createReservation(reservation);
     }
 
     @GetMapping(value = "/reservations")
