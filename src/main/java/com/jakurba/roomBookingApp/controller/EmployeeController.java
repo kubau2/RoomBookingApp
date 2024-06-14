@@ -37,4 +37,9 @@ public class EmployeeController {
         }
     }
 
+    @GetMapping(value = "/employees/findById")
+    public Employee findEmployeeById(@RequestBody Employee employee) {
+        return employeeService.getEmployeeById(employee.getId());
+    }
+
 }
