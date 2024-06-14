@@ -24,4 +24,9 @@ public class EmployeeController {
         return employeeService.getEmployees();
     }
 
+    @GetMapping(value = "/employees/findById")
+    public Employee findEmployeeById(@RequestBody Employee employee) {
+        return employeeService.getEmployeeById(employee.getId());
+    }
+
 }
