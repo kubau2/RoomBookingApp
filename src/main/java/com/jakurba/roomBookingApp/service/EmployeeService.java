@@ -1,6 +1,5 @@
 package com.jakurba.roomBookingApp.service;
 
-import com.jakurba.roomBookingApp.exceptions.RoomNotFoundException;
 import com.jakurba.roomBookingApp.exceptions.UserNotFoundException;
 import com.jakurba.roomBookingApp.model.Employee;
 import com.jakurba.roomBookingApp.repository.EmployeeRepository;
@@ -14,6 +13,11 @@ public class EmployeeService {
 
     @Autowired
     EmployeeRepository employeeRepository;
+
+    @Autowired
+    public EmployeeService(EmployeeRepository employeeRepository) {
+        this.employeeRepository = employeeRepository;
+    }
 
     public List<Employee> getEmployees() {
         return employeeRepository.findAll();
