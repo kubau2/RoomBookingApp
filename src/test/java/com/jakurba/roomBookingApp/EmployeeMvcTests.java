@@ -1,13 +1,19 @@
 package com.jakurba.roomBookingApp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.jakurba.roomBookingApp.model.Employee;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -16,43 +22,44 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class EmployeeMvcTests {
 
-	@Autowired
-	private MockMvc mockMvc;
+    @Autowired
+    private MockMvc mockMvc;
 
-	@Autowired
-	private ObjectMapper objectMapper;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-	//Those tests work based on the preloaded data.sql
+    //Those tests work based on the preloaded data.sql
 
-	@Test
-	void findEmployeeByIdIs200() throws Exception {
-		//given
-		Employee emp = new Employee(1L, "test@email.mail", "name", "surname");
-		String requestBody = objectMapper.writeValueAsString(emp);
+    @Test
+    void findEmployeeByIdIs200() throws Exception {
+        //given
+        Employee emp = new Employee(1L, "test@email.mail", "name", "surname");
+        String requestBody = objectMapper.writeValueAsString(emp);
 
-		//when and then
-		mockMvc.perform(get("/api/employees/findById").contentType("application/json").content(requestBody)).andExpect(status().isOk());
-	}
+        //when and then
+        mockMvc.perform(get("/api/employees/findById").contentType("application/json").content(requestBody)).andExpect(status().isOk());
+    }
 
-	@Test
-	void findEmployeeByIdIs404() throws Exception {
-		Employee emp = new Employee(2L, "test@email.mail", "name", "surname");
+    @Test
+    void findEmployeeByIdIs404() throws Exception {
+        Employee emp = new Employee(2L, "test@email.mail", "name", "surname");
 
-		String requestBody = objectMapper.writeValueAsString(emp);
+        String requestBody = objectMapper.writeValueAsString(emp);
 
-		mockMvc.perform(get("/api/employees/findById").contentType("application/json").content(requestBody)).andExpect(status().isNotFound()).andDo(print());
-	}
+        mockMvc.perform(get("/api/employees/findById").contentType("application/json").content(requestBody)).andExpect(status().isNotFound()).andDo(print());
+    }
 
-//	@Test
-//	void listAllEmployees() throws Exception {
-//		List<Employee> employeeList = new ArrayList<>();
-//		Employee emp1 = new Employee(1L, "test@email.mail", "name", "surname");
-//		Employee emp2 = new Employee(2L, "johny@email.mail", "Johny", "Blaze");
-//		employeeList.add(emp1);
-//		employeeList.add(emp2);
-//
-//		when(service.getEmployees()).thenReturn(employeeList);
-//
-//		mockMvc.perform(get("/api//employees").contentType("application/json")).andExpect(status().isOk()).andDo(print());
-//	}
+    @Test
+    void listAllEmployees() throws Exception {
+        MockHttpServletResponse response = mockMvc.perform(get("/api/employees").contentType("application/json")).andReturn().getResponse();
+        String responseContent = response.getContentAsString();
+        List<Employee> employeeList = new ArrayList<>();
+        Gson g = new Gson();
+        String[] responseSplitToArray = responseContent.split("\\[");
+        for (int i = 1; i < responseSplitToArray.length; i++) {
+            String employeeEntry = responseSplitToArray[i].replace("]", "");
+            employeeList.add(g.fromJson(employeeEntry, Employee.class));
+        }
+        assertEquals("john.williams@test.com", employeeList.getFirst().getEmail());
+    }
 }
