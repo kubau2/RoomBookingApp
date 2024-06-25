@@ -1,5 +1,6 @@
 package com.jakurba.roomBookingApp.service;
 
+import com.jakurba.roomBookingApp.exceptions.RoomNotFoundException;
 import com.jakurba.roomBookingApp.model.Room;
 import com.jakurba.roomBookingApp.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,10 @@ public class RoomService {
 
     public List<Room> getRooms() {
         return roomRepository.findAll();
+    }
+
+    public Room findRoomByID(Long id){
+        return roomRepository.findById(id).orElseThrow(RoomNotFoundException::new);
     }
 
 }
