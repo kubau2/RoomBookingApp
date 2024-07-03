@@ -1,34 +1,31 @@
 package com.jakurba.roomBookingApp.service;
 
-import com.jakurba.roomBookingApp.exceptions.PermissionException;
-import com.jakurba.roomBookingApp.exceptions.ReservationNotFoundException;
-import com.jakurba.roomBookingApp.exceptions.ReservationTimestampException;
-import com.jakurba.roomBookingApp.exceptions.RoomNotAvailableException;
-import com.jakurba.roomBookingApp.exceptions.RoomNotFoundException;
-import com.jakurba.roomBookingApp.exceptions.UserNotFoundException;
+import com.jakurba.roomBookingApp.exceptions.*;
 import com.jakurba.roomBookingApp.model.Reservation;
 import com.jakurba.roomBookingApp.model.Room;
 import com.jakurba.roomBookingApp.repository.EmployeeRepository;
 import com.jakurba.roomBookingApp.repository.ReservationRepository;
 import com.jakurba.roomBookingApp.repository.RoomRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import net.minidev.json.JSONObject;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class ReservationService {
 
-    @Autowired
     ReservationRepository reservationRepository;
 
-    @Autowired
     EmployeeRepository employeeRepository;
 
-    @Autowired
     RoomRepository roomRepository;
+
+    public ReservationService(ReservationRepository reservationRepository, EmployeeRepository employeeRepository, RoomRepository roomRepository) {
+        this.reservationRepository = reservationRepository;
+        this.employeeRepository = employeeRepository;
+        this.roomRepository = roomRepository;
+    }
 
     public List<Reservation> getReservations() {
         return reservationRepository.findAll();
@@ -54,7 +51,7 @@ public class ReservationService {
 
         Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(ReservationNotFoundException::new);
         if (reservation.getEmployee().getId().equals(employeeId)) {
-            reservationRepository.deleteById(reservationId);
+            reservationRepository.delete(reservation);
             return true;
         } else {
             throw new PermissionException();
