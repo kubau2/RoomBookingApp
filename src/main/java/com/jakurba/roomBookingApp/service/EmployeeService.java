@@ -11,7 +11,6 @@ import java.util.List;
 @Service
 public class EmployeeService {
 
-    @Autowired
     EmployeeRepository employeeRepository;
 
     @Autowired

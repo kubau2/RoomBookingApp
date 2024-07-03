@@ -18,8 +18,11 @@ import java.util.List;
 @RequestMapping("/api")
 public class ReservationController {
 
-    @Autowired
     ReservationService reservationService;
+
+    public ReservationController(ReservationService reservationService) {
+        this.reservationService = reservationService;
+    }
 
     @PostMapping(value = "/reservation/new")
     public Reservation createReservation(@RequestBody Reservation reservation) {

@@ -14,22 +14,16 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
-@AutoConfigureMockMvc
 class ReservationMockTests {
 
     @Mock
@@ -60,129 +54,130 @@ class ReservationMockTests {
 
     @Test
     void getReservations() {
-        // Arrange
+        // Given
         List<Reservation> reservations = Collections.singletonList(reservation);
         when(reservationRepository.findAll()).thenReturn(reservations);
 
-        // Act
+        // When
         List<Reservation> result = reservationService.getReservations();
 
-        // Assert
+        // Then
         assertEquals(1, result.size());
         assertEquals(reservation, result.getFirst());
     }
 
     @Test
     void createReservation_Success() {
-        // Arrange
+        // Given
         when(employeeRepository.findById(1L)).thenReturn(Optional.of(emp));
         when(roomRepository.findById(1L)).thenReturn(Optional.of(room));
         when(reservationRepository.save(any(Reservation.class))).thenReturn(reservation);
 
-        // Act
+        // When
         Reservation result = reservationService.createReservation(reservation);
 
-        // Assert
+        // Then
         assertNotNull(result);
         assertEquals(reservation, result);
     }
 
     @Test
     void createReservation_UserNotFoundException() {
-        // Arrange
+        // Given
         when(employeeRepository.findById(1L)).thenReturn(Optional.empty());
 
-        // Act & Assert
+        // When & Then
         assertThrows(UserNotFoundException.class, () -> reservationService.createReservation(reservation));
     }
 
     @Test
     void createReservation_RoomNotFoundException() {
-        // Arrange
+        // Given
         when(employeeRepository.findById(1L)).thenReturn(Optional.of(emp));
         when(roomRepository.findById(1L)).thenReturn(Optional.empty());
 
-        // Act & Assert
+        // When & Then
         assertThrows(RoomNotFoundException.class, () -> reservationService.createReservation(reservation));
     }
 
     @Test
     void createReservation_RoomNotAvailableException() {
-        // Arrange
+        // Given
         when(employeeRepository.findById(1L)).thenReturn(Optional.of(emp));
         when(roomRepository.findById(1L)).thenReturn(Optional.of(room));
         when(reservationRepository.findAllReservationsForTheRoomInGivenTimestampWindow(anyLong(), any(), any())).thenReturn(Collections.singletonList(reservation));
 
-        // Act & Assert
+        // When & Then
         assertThrows(RoomNotAvailableException.class, () -> reservationService.createReservation(reservation));
     }
 
     @Test
     void createReservation_ReservationTimestampException() {
-        // Arrange
+        // Given
         Reservation invalidReservation = new Reservation(1L, room, Timestamp.valueOf(LocalDateTime.now().plusDays(2)), Timestamp.valueOf(LocalDateTime.now().plusDays(1)), emp);
 
-        // Act & Assert
+        // When & Then
         assertThrows(ReservationTimestampException.class, () -> reservationService.createReservation(invalidReservation));
     }
 
     @Test
     void createReservation_InvalidUserData() {
-        // Arrange
+        // Given
         reservation.setEmployee(null);
 
-        // Act & Assert
+        // When & Then
         assertThrows(UserNotFoundException.class, () -> reservationService.createReservation(reservation));
     }
 
     @Test
     void createReservation_InvalidRoomData() {
-        // Arrange
+        // Given
         reservation.setRoom(null);
 
-        // Act & Assert
+        // When & Then
         assertThrows(RoomNotFoundException.class, () -> reservationService.createReservation(reservation));
     }
 
     @Test
     void deleteReservation() {
-        // Arrange
+        // Given
         when(reservationRepository.findById(1L)).thenReturn(Optional.of(reservation));
 
         JSONObject json = new JSONObject();
         json.put("reservationId", "1");
         json.put("employeeId", "1");
 
-        // Act
+        // When
         boolean result = reservationService.deleteReservationByIdAndEmployeeId(json);
 
-        // Assert
+        // Then
         assertTrue(result);
     }
 
     @Test
     void deleteReservation_ReservationNotFoundException() {
-        // Arrange
+        // Given
         when(reservationRepository.findById(1L)).thenReturn(Optional.empty());
 
         JSONObject json = new JSONObject();
         json.put("reservationId", "1");
         json.put("employeeId", "1");
 
-        // Act & Assert
+        // When & Then
         assertThrows(ReservationNotFoundException.class, () -> reservationService.deleteReservationByIdAndEmployeeId(json));
     }
 
     @Test
     void deleteReservation_PermissionException() {
-        // Arrange
+        // Given
         when(reservationRepository.findById(1L)).thenReturn(Optional.of(reservation));
 
         JSONObject json = new JSONObject();
         json.put("reservationId", "1");
         json.put("employeeId", "2"); // different employee ID
 
-        // Act & Assert
+        // When & Then
         assertThrows(PermissionException.class, () -> reservationService.deleteReservationByIdAndEmployeeId(json));
     }
+
 }
