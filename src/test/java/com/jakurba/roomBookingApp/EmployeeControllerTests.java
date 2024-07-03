@@ -2,6 +2,7 @@ package com.jakurba.roomBookingApp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.jakurba.roomBookingApp.model.Employee;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class EmployeeMvcTests {
+class EmployeeControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -31,7 +32,7 @@ class EmployeeMvcTests {
     //Those tests work based on the preloaded data.sql
 
     @Test
-    void findEmployeeByIdIs200() throws Exception {
+    void findEmployeeByIdIsOk() throws Exception {
         //given
         Employee emp = new Employee(1L, "test@email.mail", "name", "surname");
         String requestBody = objectMapper.writeValueAsString(emp);
@@ -51,15 +52,13 @@ class EmployeeMvcTests {
 
     @Test
     void listAllEmployees() throws Exception {
-        MockHttpServletResponse response = mockMvc.perform(get("/api/employees").contentType("application/json")).andReturn().getResponse();
+        MockHttpServletResponse response = mockMvc.perform(get("/api/employees").contentType("application/json"))
+                .andReturn().getResponse();
         String responseContent = response.getContentAsString();
-        List<Employee> employeeList = new ArrayList<>();
-        Gson g = new Gson();
-        String[] responseSplitToArray = responseContent.split("\\[");
-        for (int i = 1; i < responseSplitToArray.length; i++) {
-            String employeeEntry = responseSplitToArray[i].replace("]", "");
-            employeeList.add(g.fromJson(employeeEntry, Employee.class));
-        }
+        Gson gson = new Gson();
+        TypeToken<List<Employee>> token = new TypeToken<>() {};
+        List<Employee> employeeList = gson.fromJson(responseContent, token.getType());
+
         assertEquals("john.williams@test.com", employeeList.getFirst().getEmail());
     }
 }

@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-class RoomMockTests {
+class RoomServiceTests {
 
     @Mock
     private RoomRepository roomRepository;

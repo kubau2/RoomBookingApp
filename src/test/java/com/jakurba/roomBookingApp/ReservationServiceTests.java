@@ -24,7 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.when;
 
-class ReservationMockTests {
+class ReservationServiceTests {
 
     @Mock
     private RoomRepository roomRepository;

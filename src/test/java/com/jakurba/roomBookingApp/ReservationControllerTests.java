@@ -8,13 +8,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class ReservationMvcTests {
+class ReservationControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -63,8 +64,7 @@ class ReservationMvcTests {
 
     @Test
     void listAllReservations() throws Exception {
-        //TODO: Mock reservation
-        createReservationIsOk();
+        createAnotherReservationIsOk();
         MockHttpServletResponse response = mockMvc.perform(get("/api/reservations").contentType("application/json")).andReturn().getResponse();
         String responseContent = response.getContentAsString();
         Assertions.assertTrue(responseContent.contains("Blue"));
@@ -72,8 +72,7 @@ class ReservationMvcTests {
 
     @Test
     void deleteReservation() throws Exception {
-        //TODO: Mock reservation
-        createReservationIsOk();
+        createAnotherReservationIsOk();
         String requestBody = """
                 {
                     "reservationId": 1,
@@ -91,7 +90,23 @@ class ReservationMvcTests {
                     "reservationId": 1,
                     "employeeId": 1
                 }""";
-       mockMvc.perform(delete("/api/reservation").contentType("application/json").content(requestBody)).andExpect(status().isNotFound()).andDo(print());
+        mockMvc.perform(delete("/api/reservation").contentType("application/json").content(requestBody)).andExpect(status().isNotFound()).andDo(print());
+    }
+
+    private void createAnotherReservationIsOk() throws Exception {
+        String requestBody = """
+                {
+                    "room_Id": 1,
+                    "employee":{
+                        "id":1
+                    },
+                    "room":{
+                        "id":1
+                    },
+                    "reservationStart": "2024-02-05T14:25:43.511Z",
+                    "reservationEnd": "2024-02-05T15:25:43.511Z"
+                }""";
+        mockMvc.perform(post("/api/reservation/new").contentType("application/json").content(requestBody)).andReturn().getResponse().getContentAsString();
     }
 
 }
